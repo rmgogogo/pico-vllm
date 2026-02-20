@@ -59,6 +59,6 @@ class Scheduler:
                 finished_seq.append(seq)
         return finished_seq
     
-    def _logging_queues(self):
+    def logging_queues(self):
         logging.info("waiting: %s", self.waiting)
         logging.info("running: %s", self.running)

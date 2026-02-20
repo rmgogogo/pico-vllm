@@ -23,12 +23,14 @@ class PicoEngine():
         # add to waiting queue
         for prompt in prompts:
             self._add_request(prompt)
+        logging.info("added %s requests to waiting queue", len(prompts))
         # schedule from waiting queue to running queue
         finished_seqs = []
         while not self.scheduler.is_finished():
             # run step (call certain engine, e.x. NaiveEngine)
             step_finished_seqs = self._step()
             finished_seqs.extend(step_finished_seqs)
+            self.scheduler.logging_queues()
         # decode the finished_seq
         return [self.tokenizer.decode(seq.token_ids[seq.input_len:], skip_special_tokens=True) for seq in finished_seqs]
 
@@ -39,7 +41,6 @@ class PicoEngine():
             [prompt], tokenize=False, add_generation_prompt=True, enable_thinking=True)
         # convert str to token id via tokenizer
         token_ids = self.tokenizer.encode(prompt)
-        logging.info("token_ids: %s %s", token_ids, type(token_ids))
         # create a new Sequence
         seq = Sequence(token_ids)
         # call scheduler to add

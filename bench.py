@@ -4,12 +4,6 @@ from time import perf_counter
 
 from transformers import AutoTokenizer, AutoModelForCausalLM
 
-# from picovllm.naive.naive_engine import NaiveEngine
-# from picovllm.naive.batch_engine import NaiveBatchEngine
-# from picovllm.naive.dcache_engine import DynamicCacheEngine
-# from picovllm.naive.scache_engine import StaticCacheEngine
-# from picovllm.naive.pack_engine import PackEngine
-# from picovllm.naive.managed_pack_engine import ManagedPackEngine
 from picovllm.pico.engine import PicoEngine
 
 def run(engine, prompts) -> float:
@@ -17,23 +11,16 @@ def run(engine, prompts) -> float:
     results = engine.generate(prompts)
     tspend = perf_counter() - ts
     for item in results:
-        logging.info("generated:\n%s", item)
+        logging.info("--------------------\n%s", item)
     return tspend
 
 def main():
-#    path = os.path.expanduser("~/huggingface/Qwen3-0.6B/")
     model_name = "Qwen/Qwen3-0.6B"
     tokenizer = AutoTokenizer.from_pretrained(model_name, padding_side="left")
     model = AutoModelForCausalLM.from_pretrained(model_name, torch_dtype="auto", device_map="auto")
     model.eval()
 
     engines = [
-        # NaiveEngine(model, tokenizer), 
-        # NaiveBatchEngine(model, tokenizer), 
-        # DynamicCacheEngine(model, tokenizer), 
-        # StaticCacheEngine(model, tokenizer), 
-        # PackEngine(model, tokenizer),
-        # ManagedPackEngine(model, tokenizer),
         PicoEngine(model, tokenizer),
     ]
     
